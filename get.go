@@ -1,6 +1,7 @@
 package windward
 
 import (
+	"fmt"
 	lacia "github.com/jialanli/lacia/utils"
 	"log"
 	"strings"
@@ -38,8 +39,16 @@ func checkIdenticalConf() {
 }
 
 func loopCheck(m map[string]interface{}) {
-	for k, v := range m {
-		log.Printf("key set: k=%v", k)
+	for k0, v := range m {
+		if k0 == "ports" || k0 == "port" || k0 == "- port" {
+			fmt.Printf("打印：k0=%v, v=%+v, type=%v\n", k0, v, lacia.GetValTypeOf(v))
+		}
+		//k := lacia.RemoveX(k0, "- ")
+		k := k0
+		if k0 == "port" || k0 == "- port" {
+			log.Printf("key set before: k:%v, after:%v, v=%+v", k0, k, v)
+		}
+
 		keyMap[k] = v
 		str = append(str, k)
 		if str, ok := checkNeedScanByVertical(v); ok {
@@ -49,6 +58,30 @@ func loopCheck(m map[string]interface{}) {
 				loopCheck(convertM(innerV))
 			case "map[string]interface{}":
 				loopCheck(v.(map[string]interface{}))
+			case "[]interface{}":
+				loopCheck0(v.([]interface{}))
+			default:
+				return
+			}
+		}
+	}
+}
+
+func loopCheck0(s []interface{}) {
+	for i, v := range s {
+		if v == "port" {
+			fmt.Printf("打印：i=%v, v=%+v, type=%v\n", i, v, lacia.GetValTypeOf(v))
+		}
+
+		if str, ok := checkNeedScanByVertical(v); ok {
+			switch str {
+			case "map[interface{}]interface{}":
+				innerV := v.(map[interface{}]interface{})
+				loopCheck(convertM(innerV))
+			case "map[string]interface{}":
+				loopCheck(v.(map[string]interface{}))
+			case "[]interface{}":
+				loopCheck0(v.([]interface{}))
 			default:
 				return
 			}
@@ -80,6 +113,9 @@ func checkNeedScanByVertical(m interface{}) (string, bool) {
 	if s == "map[interface{}]interface{}" {
 		return s, true
 	}
+	if s == "[]interface{}" {
+		return s, true
+	}
 
 	return "", false
 }
@@ -95,7 +131,7 @@ func getV(key string, v interface{}) (res interface{}) {
 			m := v.(map[interface{}]interface{})
 			for k, next := range m {
 				//fmt.Println("每一个：", k)
-				//if k == "keyB" {
+				//if k == "SecC" {
 				//	fmt.Println("hhh")
 				//}
 				if key == k.(string) {
@@ -116,12 +152,19 @@ func getV(key string, v interface{}) (res interface{}) {
 				}
 
 				res = getV(key, next)
+				//fmt.Println("======dd0=======", res)
 			}
+		case "[]interface{}":
+			inS := v.([]interface{})
+			for _, val := range inS { // val:name: wordpress3
+				getV(key, val)
+			}
+			//loopCheck0(v.([]interface{}))
 		default:
 			return
 		}
 	} else {
-		//return v
+		return keyMap[key]
 	}
 	return
 }
@@ -166,6 +209,20 @@ func getVLink(keys []string, v0 interface{}) (res interface{}) {
 						return
 					}
 				}
+			case "[]interface{}":
+				inS := v0.([]interface{})
+				for _, val := range inS { // val:name: wordpress3
+					if i == len(keys)-1 {
+						return val
+					}
+
+					if i < len(keys)-1 {
+						res = getVLink(keys[i:], val)
+						return
+					}
+
+					getVLink(keys[i+1:], val)
+				}
 			default:
 				return
 			}
@@ -201,6 +258,7 @@ func (w *Wind) GetKey(name, key string) (res interface{}) {
 			}
 
 			res = getV(key, v)
+			//fmt.Println("最后：", res)
 		}
 	}
 
