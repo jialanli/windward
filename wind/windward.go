@@ -1,4 +1,4 @@
-package windward
+package wind
 
 import (
 	"encoding/json"
@@ -90,7 +90,7 @@ func (w *Wind) setConf() error {
 			return err
 		}
 		c.status = true
-		log.Printf("===> %s init done", c.confName)
+		log.Printf("===> %s init done\n", c.confName)
 		//confList = append(confList, c.conf)
 		respectiveMap[c.path] = c.conf
 	}

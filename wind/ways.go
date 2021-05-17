@@ -1,4 +1,4 @@
-package windward
+package wind
 
 import (
 	"github.com/spf13/cast"

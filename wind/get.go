@@ -1,4 +1,4 @@
-package windward
+package wind
 
 import (
 	"encoding/json"
