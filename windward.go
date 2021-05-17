@@ -9,7 +9,15 @@ import (
 	"strings"
 )
 
+const (
+	TypeList5 = "map[interface{}]interface{}"
+	TypeList6 = "map[string]interface{}"
+	TypeList7 = "[]interface{}"
+	TypeList8 = "[]map[string]interface{}"
+)
+
 var sufList = []string{"yml", "yaml", "json"}
+var typeSelect = []string{TypeList5, TypeList6, TypeList7, TypeList8}
 
 type fileStat struct {
 	status   bool
@@ -17,6 +25,7 @@ type fileStat struct {
 	confName string // conf.yml
 	confType string // yml
 	conf     map[string]interface{}
+	bs       []byte
 }
 
 type Wind struct {
@@ -35,7 +44,7 @@ func GetWindward() *Wind {
 
 func (w *Wind) InitConf(paths []string) {
 	if len(paths) <= 0 {
-		log.Panicf("config can't init, because paths is 0")
+		log.Panicf("config can't init, because len(paths) is 0")
 		return
 	}
 	paths = checkRepeat(paths)
@@ -51,6 +60,7 @@ func (w *Wind) InitConf(paths []string) {
 			confName: confName,
 			confType: confType,
 			conf:     make(map[string]interface{}),
+			//bs: make([]byte),
 		})
 	}
 
@@ -60,7 +70,8 @@ func (w *Wind) InitConf(paths []string) {
 		log.Printf("config init err: %v", err.Error())
 		return
 	}
-	log.Printf("config set done: %+v", respectiveMap)
+	//log.Printf("config set done: %+v", respectiveMap)
+	log.Println("windward init success")
 }
 
 func checkRepeat(paths []string) (result []string) {
@@ -80,21 +91,12 @@ func (w *Wind) setConf() error {
 		}
 		c.status = true
 		log.Printf("===> %s init done", c.confName)
-		confList = append(confList, c.conf)
+		//confList = append(confList, c.conf)
 		respectiveMap[c.path] = c.conf
 	}
 
 	checkIdenticalConf()
 	return nil
-	// set configMap
-	//if configMap == nil {
-	//	configMap = map[string]interface{}{}
-	//}
-	//for i := range confList {
-	//	for k, v := range confList[i] {
-	//		configMap[k] = v
-	//	}
-	//}
 }
 
 func readConf(conf *fileStat) error {
@@ -102,15 +104,9 @@ func readConf(conf *fileStat) error {
 	if err != nil {
 		return err
 	}
+	conf.bs = bs0
+	bs := []byte(lacia.DeletePreAndSufSpace(string(bs0)))
 
-	//bs0 = bytes.TrimPrefix(bs0, []byte{239, 187, 191}) //[]byte("\xef\xbb\xbf") Or []byte{239, 187, 191}
-	log.Printf("type=%v", conf.confType)
-	bs1 := lacia.DeletePreAndSufSpace(string(bs0))
-	bs := []byte(bs1)
-	//reader := bytes.NewReader(bs0)
-	//buf := new(bytes.Buffer)
-	//buf.ReadFrom(reader)
-	//bs := buf.Bytes()
 	switch conf.confType {
 	case "json":
 		if err := json.Unmarshal(bs, &conf.conf); err != nil {
