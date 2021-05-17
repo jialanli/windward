@@ -1,4 +1,5 @@
-# 迎风, by jialanli 2021 持续更新中...
+# 迎风
+by jialanli 2021 持续更新中...
 
 so surprise 自研的一款配置框架，欢迎支持和使用
 
@@ -7,6 +8,7 @@ so surprise 自研的一款配置框架，欢迎支持和使用
 3, 支持获取单条/多条配置、全文件注入
 
 eg:
+
 	name, name1 := "./s.json", "./c.yml"
 	w := GetWindward()
 	w.InitConf([]string{name, name1})
