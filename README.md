@@ -3,7 +3,7 @@ by jialanli 2021 持续更新中...
 
 so surprise 自研的一款配置框架，欢迎支持和使用
 
-    go get -t github.com/jialanli/windward
+    go get -t github.com/jialanli/windward/wind
 
 1, 支持同时批量读取多个不同类型的配置文件
 2, 支持json、yaml文件类型
@@ -13,12 +13,12 @@ eg:
 
 	import (
        "fmt"
-       "github.com/jialanli/windward"
+       windward "github.com/jialanli/windward/wind"
     )
     
     func main() {
         name, name1 := "./s.json", "./c.yml"
-        w := GetWindward()
+        w := windward.GetWindward()
         w.InitConf([]string{name, name1})
         c4 := w.GetVal(name, "class.data")
         fmt.Println("class.data-->", c4)
