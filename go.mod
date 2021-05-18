@@ -1,4 +1,4 @@
-module windward
+module github.com/jialanli/windward
 
 go 1.14
 
