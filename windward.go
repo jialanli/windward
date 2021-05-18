@@ -60,7 +60,6 @@ func (w *Wind) InitConf(paths []string) {
 			confName: confName,
 			confType: confType,
 			conf:     make(map[string]interface{}),
-			//bs: make([]byte),
 		})
 	}
 
@@ -86,7 +85,7 @@ func (w *Wind) setConf() error {
 	}
 	for _, c := range w.pathFamily {
 		if err := readConf(c); err != nil {
-			log.Printf("readConf err:%v", err.Error())
+			log.Fatalf("readConf err:%v", err.Error())
 			return err
 		}
 		c.status = true
