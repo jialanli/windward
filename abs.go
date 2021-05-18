@@ -1,4 +1,4 @@
-package wind
+package windward
 
 type WindWard interface {
 
