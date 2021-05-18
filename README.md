@@ -3,7 +3,7 @@ by jialanli 2021 持续更新中...
 
 so surprise 自研的一款配置框架，欢迎支持和使用
 
-    go get -t github.com/jialanli/windward/wind
+    go get -t github.com/jialanli/windward
 
 1, 支持同时批量读取多个不同类型的配置文件
 2, 支持json、yaml文件类型
@@ -13,7 +13,7 @@ eg:
 
 	import (
        "fmt"
-       windward "github.com/jialanli/windward/wind"
+       windward "github.com/jialanli/windward"
     )
     
     func main() {
